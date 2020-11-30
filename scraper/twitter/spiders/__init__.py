@@ -161,7 +161,7 @@ class TwitterSpider(scrapy.Spider):
         :return: Yielded request with user handle.
         """
 
-        with open('requests.json', 'r') as file:
+        with open('spiders/requests.json', 'r') as file:
             users = json.load(file)['users']
 
         urls = [build_user_info_url(user) for user in users]
@@ -266,5 +266,5 @@ class TwitterSpider(scrapy.Spider):
 
         logging.info(f'Scraped data of the user @{user_handle}')
 
-        with open(f'../data/{user_handle}.json', 'w') as file:
+        with open(f'data/{user_handle}.json', 'w') as file:
             file.write(json.dumps(user_data))
