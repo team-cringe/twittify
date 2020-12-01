@@ -1,4 +1,8 @@
 import scrapy
+from scrapy.crawler import CrawlerProcess
+import scrapy.crawler as crawler
+from multiprocessing import Process, Queue
+from twisted.internet import reactor
 import requests
 import logging
 import json
@@ -100,6 +104,37 @@ def build_twitter_url(rest_id, count) -> str:
             '&ext=mediaStats%2ChighlightedLabel')
 
 
+def get_mentions(user_handle, crawled_users):
+    res = set()
+    f = open(f'../data/{user_handle}.json')
+    data = json.load(f)
+    f.close()
+    for tweet in data['tweets']:
+        for mention in data['tweets'][tweet]['mentions']:
+            if mention not in crawled_users:
+                res.add(mention)
+    return res
+
+
+def set_from_requests():
+    res = set()
+    with open('requests.json') as f:
+        data = json.load(f)
+    print(data)
+    for user in data['users']:
+        print(user)
+        res.add(user)
+    return res
+
+
+def new_request(mentions):
+    ments = list(mentions)
+    data = {'users' : ments}
+    f = open('requests.json', 'w')
+    json.dump(data, f)
+    f.close()
+
+
 class TwitterSpider(scrapy.Spider):
     name = 'twitter'
 
@@ -161,7 +196,7 @@ class TwitterSpider(scrapy.Spider):
         :return: Yielded request with user handle.
         """
 
-        with open('spiders/requests.json', 'r') as file:
+        with open('requests.json', 'r') as file:
             users = json.load(file)['users']
 
         urls = [build_user_info_url(user) for user in users]
@@ -246,10 +281,10 @@ class TwitterSpider(scrapy.Spider):
                 if 'user_mentions' in entities \
                 else []
             # If tweet is the quote, get handle of the author and put it to mentions
-            quote = re.search(r'https://twitter.com/(.+?)/[A-Za-z0-9]*',
+            '''quote = re.search(r'https://twitter.com/(.+?)/[A-Za-z0-9]*',
                               data[i]['quoted_status_permalink']['expanded']).group(1) \
                 if 'quoted_status_id_str' in data[i] else ''
-            mentions.append(quote) if not mentions else [quote]
+            mentions.append(quote) if not mentions else [quote]'''
 
             # TODO: Add tweet frequency, retweet ratio, text to links ratio, etc.
             tweets[i].update({
@@ -266,5 +301,44 @@ class TwitterSpider(scrapy.Spider):
 
         logging.info(f'Scraped data of the user @{user_handle}')
 
-        with open(f'data/{user_handle}.json', 'w') as file:
+        with open(f'../data/{user_handle}.json', 'w') as file:
             file.write(json.dumps(user_data))
+
+
+def run_spider(spider):
+    def f(q):
+        try:
+            runner = crawler.CrawlerRunner()
+            deferred = runner.crawl(spider)
+            deferred.addBoth(lambda _: reactor.stop())
+            reactor.run()
+            q.put(None)
+        except Exception as e:
+            q.put(e)
+
+    q = Queue()
+    p = Process(target=f, args=(q,))
+    p.start()
+    result = q.get()
+    p.join()
+    if result is not None:
+        raise result
+
+used_users = {''}
+f = open('requests.json')
+data = json.load(f)
+f.close()
+for user in data['users']:
+    used_users.add(user)
+# print(used_users)
+for i in range(5):
+    cur_users = set_from_requests()
+    used_users = used_users.union(cur_users)
+    run_spider(TwitterSpider)
+    for user in cur_users:
+        try:
+            new = get_mentions(user, used_users)
+        except FileNotFoundError:
+            print('Skipping to next user')
+            continue
+        new_request(new)
