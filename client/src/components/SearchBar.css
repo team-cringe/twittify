@@ -1,0 +1,27 @@
+.SearchBar {
+  margin-top: 50px;
+}
+
+.badge {
+  margin: 3px;
+}
+
+.badge > div {
+  display: flex;
+  align-items: center;
+}
+
+.close-btn {
+  width: 1em;
+  font-size: 1.5em;
+}
+
+.close-btn:hover {
+  width: 1em;
+  font-size: 1.5em;
+  background-color: blue;
+}
+
+.form-group.searchbar {
+  margin: 0px;
+}
