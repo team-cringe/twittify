@@ -13,12 +13,16 @@
 
 .close-btn {
   width: 1em;
-  font-size: 1.5em;
+  height: 1em;
+  margin-left: 0.5em;
+}
+
+.close-btn img {
+  width: 1em;
+  height: 1em;
 }
 
 .close-btn:hover {
-  width: 1em;
-  font-size: 1.5em;
   background-color: blue;
 }
 

@@ -82,7 +82,7 @@ const SearchBar: React.FC<ISearchBarProps> = () => {
                   <div>
                     {el}
                     <span className="close-btn" aria-hidden="true">
-                      {closeIcon}
+                      <img src={closeIcon} alt="Close" />
                     </span>
                   </div>
                 </Badge>
