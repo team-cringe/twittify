@@ -1,8 +1,10 @@
 import React, { useState } from "react";
-import { Badge, Button, Form } from "react-bootstrap";
+import { Badge, Form } from "react-bootstrap";
 import { Formik } from "formik";
 import "./SearchBar.css";
 import closeIcon from "./closeIcon.svg";
+import search from "./loadResults";
+import { User } from "../lib/types";
 
 /**
  * Split string in tags, remove non-alphanumeric characters.
@@ -28,6 +30,7 @@ export interface ISearchBarProps {}
 
 const SearchBar: React.FC<ISearchBarProps> = () => {
   const [tags, setTags] = useState<string[]>([]);
+  const [result, setResult] = useState<User[]>([]);
 
   const deleteTag = (tag: string) => {
     const ind = tags.findIndex((el) => el === tag);
@@ -51,7 +54,8 @@ const SearchBar: React.FC<ISearchBarProps> = () => {
             addTags([values.query]);
             resetForm();
           } else {
-            alert("Send data");
+            // alert("Send data");
+            search(tags).then((res) => setResult(res));
           }
           setSubmitting(false);
         }}
@@ -97,9 +101,23 @@ const SearchBar: React.FC<ISearchBarProps> = () => {
                 </Badge>
               ))}
             </div>
+            <div>
+              {result.map((el) => (
+                <a href={el.url}>
+                  <div className="search-card d-flex align-items-center">
+                    <div className="mr-4">
+                      <img src={el.pic} />
+                    </div>
+                    <div>
+                      <h2>{el.name}</h2>
+                    </div>
+                  </div>
+                </a>
+              ))}
+            </div>
             <pre>
               {JSON.stringify(values, null, 2)} <br />
-              {JSON.stringify(tags, null, 2)}
+              {JSON.stringify(tags, null, 2)} <br />
             </pre>
           </Form>
         )}

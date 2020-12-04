@@ -24,3 +24,18 @@
 .form-group.searchbar {
   margin: 0px;
 }
+
+.search-card {
+  margin: 0.2em;
+  /* max-width: 300px; */
+  max-height: 300px;
+  border: solid grey 1px;
+  border-radius: 15px;
+  padding: 1em;
+}
+
+.search-card img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+}
