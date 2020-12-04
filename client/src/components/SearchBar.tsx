@@ -29,6 +29,13 @@ export interface ISearchBarProps {}
 const SearchBar: React.FC<ISearchBarProps> = () => {
   const [tags, setTags] = useState<string[]>([]);
 
+  const deleteTag = (tag: string) => {
+    const ind = tags.findIndex((el) => el === tag);
+    const newTags = Array.from(tags);
+    newTags.splice(ind, 1);
+    setTags(newTags);
+  };
+
   const addTags = (newTags: string[]) => {
     const uniqueTags = newTags.filter((tag) => !tags.find((el) => el === tag));
     setTags(Array.from(tags).concat(uniqueTags));
@@ -78,13 +85,15 @@ const SearchBar: React.FC<ISearchBarProps> = () => {
             </Form.Group>
             <div>
               {tags.map((el) => (
-                <Badge key={el} variant="primary">
-                  <div>
-                    {el}
-                    <span className="close-btn" aria-hidden="true">
-                      <img src={closeIcon} alt="Close" />
-                    </span>
-                  </div>
+                <Badge className="close-badge" key={el} variant="primary">
+                  {el}
+                  <span
+                    className="close-btn"
+                    aria-hidden="true"
+                    onClick={() => deleteTag(el)}
+                  >
+                    <img src={closeIcon} alt="Close" />
+                  </span>
                 </Badge>
               ))}
             </div>

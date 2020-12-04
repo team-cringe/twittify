@@ -2,13 +2,8 @@
   margin-top: 50px;
 }
 
-.badge {
+.close-badge {
   margin: 3px;
-}
-
-.badge > div {
-  display: flex;
-  align-items: center;
 }
 
 .close-btn {
