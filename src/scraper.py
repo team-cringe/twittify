@@ -1,4 +1,7 @@
 import twint
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 class Scraper:
@@ -13,6 +16,8 @@ class Scraper:
                 None: Use no proxy.
             es (str): Colon-separated host and port of an Elasticsearch instance.
         """
+        logger.setLevel(logging.INFO)
+
         self.es = es
         self.limit = limit
         self.usernames = {seed}
@@ -26,22 +31,27 @@ class Scraper:
             self.config.Proxy_port = proxy.split(':')[1]
             self.config.Proxy_type = 'socks5'
 
-    def scrape(self, limit=20):
+            logger.info(f'Set proxy `{proxy}`')
+
+    def scrape(self, following=20, tweets=1000):
         """
         Parameters:
-            limit (int): Maximum number of following users to extract.
+            following (int): Maximum number of following users to extract.
                 Default: 20.
+            tweets (int): Maximum number of user tweets to extract.
+                Default: 1000.
         """
         queue = self.usernames.copy()
         while len(self.usernames) < self.limit or self.limit is None:
             try:
                 username = queue.pop()
             except KeyError:
+                logging.warning('Scraped less than limit')
                 break
 
             # Tune parameters of Twint query and send request.
             self.config.Username = username
-            self.config.Limit = limit / 20
+            self.config.Limit = following / 20
             twint.run.Following(self.config)
 
             # Get followings of a user.
@@ -49,9 +59,17 @@ class Scraper:
             self.usernames.update(following)
             queue.update(following)
 
+            logger.info(f'Scraped following of the user `{username}`')
+            logger.info(f'Scraped {len(self.usernames)} out of {self.limit}')
+
+        self.config.Elasticsearch = self.es
+
         for username in self.usernames:
             self.config.Username = username
-            self.config.Limit = None
-            self.config.Elasticsearch = self.es
-            print(username)
-            twint.run.Lookup(self.config)
+            self.config.Limit = tweets / 20
+            self.config.Index_users = 'twittify-users'
+            self.config.Index_tweets = 'twittify-tweets'
+
+            twint.run.Search(self.config)
+
+            logger.info(f'Set tweets of `{username}` to DB')
