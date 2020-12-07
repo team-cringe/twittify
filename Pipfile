@@ -5,6 +5,9 @@ name = "pypi"
 
 [packages]
 jupyter = "*"
+progress = "*"
+matplotlib = "*"
+seaborn = "*"
 
 [dev-packages]
 pylint = "*"
@@ -13,6 +16,9 @@ pylint = "*"
 python_version = "3.8"
 
 [packages.twint]
-git = "https://github.com/twintproject/twint.git"
-editable = true
-ref = "origin/master"
+git = "https://github.com/dikuchan/twint.git"
+ref = "origin/nosleep"
+
+[packages.pandasticsearch]
+git = "https://github.com/onesuper/pandasticsearch.git"
+ref = "0.6.0"
