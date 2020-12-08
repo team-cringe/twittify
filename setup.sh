@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
-if [[ $EUID -ne 0 ]]; then
-  echo "Script must be executed as root. \
+if [[ $EUID -ne 0 ]] && ! groups | grep -Pq "(\ |^)docker(\ |$)"; then
+  echo "Script must be executed as root or user in \"docker\" group. \
     Aborting..."
   exit 1
 fi
