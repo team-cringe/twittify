@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: twittify-client
+  labels:
+    app: twittify-client
+    service: twittify-client
+spec:
+  ports:
+  - port: 80
+    name: http
+  selector:
+    app: twittify-client
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Unique key of the Deployment instance
+  name: twittify-client
+  labels:
+    app: twittify-client
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twittify-client
+      version: v1
+  template:
+    metadata:
+      labels:
+        # Apply this label to pods and default
+        # the Deployment label selector to this value
+        app: twittify-client
+        version: v1
+    spec:
+      containers:
+      - name: twittify-client
+        # Run this image
+        image: mukkumayc/twittify-client:latest
+        ports:
+        - containerPort: 80

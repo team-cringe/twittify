@@ -1,0 +1,41 @@
+.SearchBar {
+  margin-top: 50px;
+}
+
+.close-badge {
+  margin: 3px;
+}
+
+.close-btn {
+  width: 1em;
+  height: 1em;
+  margin-left: 0.5em;
+}
+
+.close-btn img {
+  width: 1em;
+  height: 1em;
+}
+
+.close-btn:hover {
+  background-color: blue;
+}
+
+.form-group.searchbar {
+  margin: 0px;
+}
+
+.search-card {
+  margin: 0.2em;
+  /* max-width: 300px; */
+  max-height: 300px;
+  border: solid grey 1px;
+  border-radius: 15px;
+  padding: 1em;
+}
+
+.search-card img {
+  width: 100px;
+  height: 100px;
+  border-radius: 50px;
+}
