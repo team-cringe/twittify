@@ -41,35 +41,38 @@ class Scraper:
             tweets (int): Maximum number of user tweets to extract.
                 Default: 1000.
         """
-        queue = self.usernames.copy()
-        while len(self.usernames) < self.limit or self.limit is None:
-            try:
-                username = queue.pop()
-            except KeyError:
-                logging.warning('Scraped less than limit')
-                break
-
-            # Tune parameters of Twint query and send request.
-            self.config.Username = username
-            self.config.Limit = following / 20
-            twint.run.Following(self.config)
-
-            # Get followings of a user.
-            following = twint.output.follows_list
-            self.usernames.update(following)
-            queue.update(following)
-
-            logger.info(f'Scraped following of the user `{username}`')
-            logger.info(f'Scraped {len(self.usernames)} out of {self.limit}')
+        queued = 1
+        scraped = 0
 
         self.config.Elasticsearch = self.es
+        self.config.Index_users = 'twittify-users'
+        self.config.Index_tweets = 'twittify-tweets'
 
-        for username in self.usernames:
+        while len(self.usernames) != 0:
+            username = self.usernames.pop()
+
+            # Tune parameters of a Twint query and send a request.
             self.config.Username = username
+            self.config.Limit = following / 20
+
+            # Get followings of a user.
+            if self.limit is None or queued < self.limit:
+                try:
+                    twint.run.Following(self.config)
+                except Exception:
+                    continue
+                queued += len(twint.output.follows_list)
+                self.usernames.update(twint.output.follows_list)
+
+            logger.info(f'Scraped followings of the user `{username}`')
+            logger.info(f'Scraped {scraped} out of {self.limit}')
+
+            # Scrape tweets of a user.
             self.config.Limit = tweets / 20
-            self.config.Index_users = 'twittify-users'
-            self.config.Index_tweets = 'twittify-tweets'
+            try:
+                twint.run.Search(self.config)
+            except Exception:
+                continue
+            scraped += 1
 
-            twint.run.Search(self.config)
-
-            logger.info(f'Set tweets of `{username}` to DB')
+            logger.info(f'Stored tweets of `{username}` in {self.es}')
