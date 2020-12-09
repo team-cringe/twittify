@@ -2,8 +2,9 @@
 
 import subprocess
 import sys
-
-from progress.bar import IncrementalBar
+import getpass
+import grp
+import os
 
 images = {'twittify-elasticsearch': 'docker.elastic.co/elasticsearch/elasticsearch:7.10.0',
           'twittify-kibana': 'docker.elastic.co/kibana/kibana:7.10.0',
@@ -45,32 +46,33 @@ def start(container):
 def process(command):
     p = subprocess.run(command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
     if p.returncode != 0 and p.stderr != b'':
-        bar.finish()
         print(p.stderr.decode('utf-8'))
         exit(1)
-    bar.next()
 
 
 if __name__ == '__main__':
-    # if os.getuid() != 0:
-    #    print('Script must be executed as root. Aborting...', file=sys.stderr)
-    #    exit(1)
+    user = getpass.getuser()
+    if os.getuid() != 0 and \
+            'docker' not in [group.gr_name
+                             for group in grp.getgrall()
+                             if user in group.gr_mem]:
+        print('Script Script must be executed as root or user in `docker` group. Aborting',
+              file=sys.stderr)
+        exit(1)
 
     p = subprocess.run('command -v docker', shell=True, text=True, stdout=subprocess.PIPE)
     if p.returncode != 0:
         print('Docker not found. Aborting...', file=sys.stderr)
         exit(1)
 
-    bar = IncrementalBar('Deploying', max=10)
-
-    bar.message = 'Pulling images'
+    print('Pulling images')
     for image in images.values():
         pull(image)
 
-    bar.message = 'Setting up network'
+    print('Setting up network')
     network('twittify-network')
 
-    bar.message = 'Deploying containers'
+    print('Deploying containers')
     deploy('twittify-elasticsearch', {'detach': None,
                                       'net': 'twittify-network',
                                       'publish': ['9200:9200', '9300:9300'],
@@ -82,8 +84,6 @@ if __name__ == '__main__':
     deploy('twittify-torproxy', {'detach': None,
                                  'publish': ['8118:8118', '9050:9050']})
 
-    bar.message = 'Starting instances'
+    print('Starting instances')
     for container in images.keys():
         start(container)
-
-    bar.finish()
