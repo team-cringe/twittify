@@ -12,7 +12,7 @@ import stop_words
 
 import logging
 
-from .parsing import *
+from server.src.parsing import *
 
 logger = logging.getLogger(__name__)
 
@@ -60,6 +60,8 @@ class Clusterizer:
             es (str): URI of an Elasticsearch instance.
             index (str): Name of data index in the instance.
         """
+        logger.setLevel(logging.INFO)
+
         self.text = None
         self.clusters = None
         self.df = DataFrame.from_es(url=es, index=index, compat=7)
@@ -75,7 +77,7 @@ class Clusterizer:
         """
         self.df = self.df.filter(self.df.language == 'ru') \
             .limit(n_tweets) \
-            .select('nlikes', 'nreplies', 'nretweets', 'tweet', 'username') \
+            .select('nlikes', 'nreplies', 'nretweets', 'tweet', 'username', 'name') \
             .to_pandas()
 
         logger.info('Loaded dataset to Pandas dataframe')
@@ -88,6 +90,7 @@ class Clusterizer:
         self.df.nreplies = self.df.nreplies.apply(np.mean)
         self.df.nretweets = self.df.nretweets.apply(np.mean)
         self.df.tweet = self.df.tweet.apply(process_tweets)
+        self.df.name = self.df.name.apply(lambda s: s[0])
 
         logger.info('Processed data')
 
@@ -113,7 +116,7 @@ class Clusterizer:
 
         logger.info('Finished cluster procedure')
 
-    def get_cluster_tags(self, n_tags=10) -> [dict]:
+    def get_tags(self, n_tags=10) -> [dict]:
         """
         Get the most common keywords of each cluster.
 
@@ -132,18 +135,15 @@ class Clusterizer:
 
         df = pd.DataFrame(text.todense())
         result = [
-            {'number': c, 'tags': [tfidf.get_feature_names()[t]
-                                   for t in np.argsort(r)[-n_tags:]]}
+            {'tags': [tfidf.get_feature_names()[t]
+                      for t in np.argsort(r)[-n_tags:]],
+             'n': c}
             for c, r in df.iterrows()
         ]
 
         return result
 
-    def get_rec_from_username(self, username) -> [str]:
-        # TODO: Scrape and predict.
-        pass
-
-    def get_rec_from_cluster(self, cluster, n=3) -> [str]:
+    def get_recommendations(self, cluster, n=3) -> [str]:
         """
         Get recommendation of users to subscribe based on a selected cluster.
 
@@ -152,9 +152,14 @@ class Clusterizer:
             n (int): Number of users to get.
 
         Return:
-            List of usernames.
+            List of user infos.
         """
         sample = self.df[self.df.cluster == cluster].sample(n=n)
-        recommended = [sample.index[u] for u in range(sample.shape[0])]
+        recommended = [{'username': sample.index[u],
+                        'fullname': sample.name.iloc[u],
+                        'nlikes': sample.nlikes.iloc[u],
+                        'nreplies': sample.nreplies.iloc[u],
+                        'nretweets': sample.nretweets.iloc[u]}
+                       for u in range(sample.shape[0])]
 
         return recommended

@@ -12,6 +12,7 @@ scikit-learn = "*"
 nltk = "*"
 pymystem3 = "*"
 emoji = "*"
+bottle = "*"
 
 [dev-packages]
 pylint = "*"
