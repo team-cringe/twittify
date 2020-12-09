@@ -4,7 +4,7 @@ import bottle
 
 from bottle import get, post
 
-from server.src.clusterizer import Clusterizer
+from src.clusterizer import Clusterizer
 
 logging.basicConfig(level=logging.INFO)
 
@@ -35,6 +35,9 @@ def recommend():
         logging.error('Data of `recommend` is empty')
         return
 
+    bottle.response.set_header('Content-Type', 'application/json')
+    bottle.response.set_header('Cache-Control', 'no-cache')
+
     return json.dumps({
         'users': [clusterizer.get_recommendations(tag['n'])
                   for tag in data['tags']]})
@@ -47,4 +50,4 @@ if __name__ == '__main__':
 
     logging.info('Processed data. Ready to start a server...')
 
-    bottle.run(host='localhost', port=7878)
+    bottle.run(host='0.0.0.0', port=7878)

@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 numpy = "*"
 pandas = "*"
-jupyter = "*"
 progress = "*"
 scikit-learn = "*"
 nltk = "*"
