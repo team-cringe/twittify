@@ -6,8 +6,10 @@ name = "pypi"
 [packages]
 jupyter = "*"
 progress = "*"
-matplotlib = "*"
-seaborn = "*"
+scikit-learn = "*"
+nltk = "*"
+pymystem3 = "*"
+emoji = "*"
 
 [dev-packages]
 pylint = "*"
@@ -15,10 +17,14 @@ pylint = "*"
 [requires]
 python_version = "3.8"
 
+[packages.pandasticsearch]
+git = "https://github.com/onesuper/pandasticsearch.git"
+ref = "0.6.0"
+
 [packages.twint]
 git = "https://github.com/dikuchan/twint.git"
 ref = "origin/nosleep"
 
-[packages.pandasticsearch]
-git = "https://github.com/onesuper/pandasticsearch.git"
-ref = "0.6.0"
+[packages.stop-words]
+git = "https://github.com/Alir3z4/python-stop-words.git"
+ref = "origin/master"
