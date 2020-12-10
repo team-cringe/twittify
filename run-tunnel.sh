@@ -15,6 +15,6 @@ export INGRESS_HOST
 
 GATEWAY_URL=http://$INGRESS_HOST:$INGRESS_PORT
 
-echo "when minikube tunnel starts, Twittify will be listen on $GATEWAY_URL"
+echo "When minikube tunnel starts, Twittify will listen on $GATEWAY_URL"
 
 minikube tunnel
