@@ -1,8 +1,16 @@
 #!/usr/bin/env bash
 
+
 echo "[INFO] Checking Istio installation"
 if ! kubectl get namespaces | grep -q istio-system; then
+
   echo "[INFO] Istio is not installed on cluster, installing Istio"
+  if ! command -v istioctl > /dev/null; then
+    echo "[INFO] Not found istioctl, installing"
+    curl -L https://istio.io/downloadIstio | sh -
+    PATH=$PWD/$(ls istio)/bin:$PATH
+    export PATH
+  fi
   istioctl install --set profile=demo -y
 fi
 echo
