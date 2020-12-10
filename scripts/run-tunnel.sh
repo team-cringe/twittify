@@ -5,7 +5,6 @@ if [[ $EUID -eq 0 ]]; then
   exit 1
 fi
 
-
 INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
 export INGRESS_PORT
 SECURE_INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="https")].nodePort}')

@@ -11,14 +11,14 @@ if ! groups | grep -Pq "(\ |^)docker(\ |$)"; then
   exit 1
 fi
 
-docker info > /dev/null || exit 1
+docker info >/dev/null || exit 1
 
 echo "[INFO] Checking Minikube status"
 minikube_status=$(minikube status)
-if ! ( echo "$minikube_status" | grep -q "^host: Running$" ) ||
-  ! ( echo "$minikube_status" | grep -q "^kubelet: Running$" ) || 
-  ! ( echo "$minikube_status" | grep -q "^apiserver: Running$" ) || 
-  ! ( echo "$minikube_status" | grep -q "^kubeconfig: Configured$" ); then
+if ! (echo "$minikube_status" | grep -q "^host: Running$") ||
+  ! (echo "$minikube_status" | grep -q "^kubelet: Running$") ||
+  ! (echo "$minikube_status" | grep -q "^apiserver: Running$") ||
+  ! (echo "$minikube_status" | grep -q "^kubeconfig: Configured$"); then
   echo "[INFO] Minikube is not running, starting Minikube cluster"
   minikube start || exit 1
 fi
@@ -31,12 +31,12 @@ if ! kubectl get namespaces | grep -q istio-system; then
 fi
 echo
 
-kubectl get namespace default --show-labels | grep -q istio-injection=enabled || \
+kubectl get namespace default --show-labels | grep -q istio-injection=enabled ||
   kubectl label namespace default istio-injection=enabled
 
 echo "[INFO] Uploading Kubernetes units"
-for config in ./istio/*; do
-  kubectl apply -f "$config";
+for config in ../istio/*; do
+  kubectl apply -f "$config"
 done
 echo
 
