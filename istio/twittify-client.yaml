@@ -38,5 +38,6 @@ spec:
       - name: twittify-client
         # Run this image
         image: mukkumayc/twittify-client:latest
+        imagePullPolicy: Always
         ports:
         - containerPort: 8080

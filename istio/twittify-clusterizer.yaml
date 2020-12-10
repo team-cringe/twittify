@@ -38,5 +38,6 @@ spec:
         - name: twittify-clusterizer
           # Run this image
           image: dikuchan/twittify-clusterizer:latest
+          imagePullPolicy: Always
           ports:
             - containerPort: 8787
