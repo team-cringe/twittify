@@ -62,6 +62,7 @@ class Clusterizer:
         """
         logger.setLevel(logging.INFO)
 
+        self.processed = False
         self.text = None
         self.clusters = None
         self.df = DataFrame.from_es(url=es, index=index, compat=7)
@@ -92,7 +93,7 @@ class Clusterizer:
         self.df.tweet = self.df.tweet.apply(process_tweets)
         self.df.name = self.df.name.apply(lambda s: s[0])
 
-        logger.info('Processed data')
+        logger.info('Preprocessed data')
 
     def cluster_data(self, n_clusters=24):
         """
@@ -115,6 +116,8 @@ class Clusterizer:
             raise ValueError(e)
 
         logger.info('Finished cluster procedure')
+
+        self.processed = True
 
     def get_tags(self, n_tags=10) -> [dict]:
         """
