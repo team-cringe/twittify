@@ -23,6 +23,10 @@ function Home(props: Props & RouteComponentProps) {
 
   useEffect(() => {
     fetchTags().then((res) => {
+      if (res === null || res === undefined) {
+        history.push("/not-loaded");
+        return;
+      }
       setTags(res);
       setLoading(false);
     });

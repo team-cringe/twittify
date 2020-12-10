@@ -1,15 +1,19 @@
 import { Tag } from "../lib/types";
 import * as yup from "yup";
 
-async function fetchTags(): Promise<Tag[]> {
+async function fetchTags(): Promise<Tag[] | null> {
   const res: {
     clusters: {
       tags: string[];
       n: number;
     }[];
-  } = await fetch(`/api/tags`)
-    .then((res) => res.json())
+  } | null = await fetch(`/api/tags`)
+    .then((res) => (!res.ok ? null : res.json()))
     .catch((err) => alert(err.toString()));
+
+  if (res === null) {
+    return res;
+  }
   //   const res = {
   //     clusters: [
   //       {
