@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: twittify-torproxy
+  labels:
+    app: twittify-torproxy
+    service: twittify-torproxy
+spec:
+  ports:
+    - port: 9050
+      name: http
+  selector:
+    app: twittify-torproxy
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Unique key of the Deployment instance
+  name: twittify-torproxy
+  labels:
+    app: twittify-torproxy
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twittify-torproxy
+      version: v1
+  template:
+    metadata:
+      labels:
+        # Apply this label to pods and default
+        # the Deployment label selector to this value
+        app: twittify-torproxy
+        version: v1
+    spec:
+      containers:
+        - name: twittify-torproxy
+          # Run this image
+          image: dperson/torproxy:latest
+          ports:
+            - containerPort: 9050
