@@ -10,4 +10,4 @@ COPY requirements.txt ./
 
 RUN pip install -r requirements.txt
 
-CMD python main.py sankldive --proxy=0.0.0.0:9050 --es=0.0.0.0:9200
+CMD python main.py sankldive --proxy=twittify-torproxy:9050 --es=twittify-elasticsearch:9200

@@ -1,6 +1,7 @@
 import twint
 import logging
 import argparse
+import requests
 
 logger = logging.getLogger(__name__)
 
@@ -19,6 +20,7 @@ class Scraper:
         """
         logger.setLevel(logging.INFO)
 
+        self.seed = seed
         self.es = es
         self.limit = limit
         self.usernames = {seed}
@@ -42,32 +44,49 @@ class Scraper:
             tweets (int): Maximum number of user tweets to extract.
                 Default: 1000.
         """
-        queued = 1
         scraped = 1
+        ready = False
 
         self.config.Elasticsearch = self.es
         self.config.Index_users = 'twittify-users'
         self.config.Index_tweets = 'twittify-tweets'
 
-        while len(self.usernames) != 0:
-            username = self.usernames.pop()
+        while True:
+            try:
+                username = self.usernames.pop()
+            except KeyError:
+                self.usernames = {self.seed}
+                username = self.seed
 
             # Tune parameters of a Twint query and send a request.
             self.config.Username = username
             self.config.Limit = following / 20
 
+            if scraped + 8 > self.limit and not ready:
+                try:
+                    request = requests.post('http://twittify-clusterizer:8787/api/ready',
+                                            data={'ready': True})
+                    request.close()
+                    ready = True
+                except Exception as e:
+                    logger.error(e)
+
+                logger.info('Scraped enough')
+                logger.info('Sent POST request to clusterizer')
+
             # Get followings of a user.
-            if self.limit is None or queued < self.limit:
+            if len(self.usernames) < self.limit:
                 try:
                     twint.run.Following(self.config)
                 except Exception as e:
                     logger.error(e)
                     continue
-                queued += len(twint.output.follows_list)
                 self.usernames.update(twint.output.follows_list)
 
-            logger.info(f'Scraped followings of the user `{username}`')
-            logger.info(f'Scraped {scraped} out of {self.limit}')
+                logger.info(f'Scraped followings of the user `{username}`')
+
+            logger.info(f'Scraped {scraped} user(s)')
+            logger.info(f'In queue: {len(self.usernames)} users')
 
             # Scrape tweets of a user.
             self.config.Limit = tweets / 20
@@ -83,17 +102,16 @@ class Scraper:
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Scrape Twitter data')
-    parser.add_argument('seed', nargs='+', help='A seed user to start scraping with')
+    parser.add_argument('seed', help='A seed user to start scraping with')
     parser.add_argument('--proxy', help='Address of a Tor proxy', default='localhost:9050')
     parser.add_argument('--es', help='Address of an Elasticsearch instance',
                         default='localhost:9200')
-    parser.add_argument('--limit', help='Maximum number of users to scrape', default=1_000)
+    parser.add_argument('--limit', help='Maximum number of users to store in queue', default=1_000)
 
     arguments = parser.parse_args()
 
-    for seed in arguments.seed:
-        scraper = Scraper(seed,
-                          limit=arguments.limit,
-                          proxy=arguments.proxy,
-                          es=arguments.es)
-        scraper.scrape(following=50)
+    scraper = Scraper(seed=arguments.seed,
+                      limit=arguments.limit,
+                      proxy=None,
+                      es=arguments.es)
+    scraper.scrape(following=50)

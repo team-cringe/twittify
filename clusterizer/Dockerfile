@@ -11,4 +11,4 @@ COPY *.py ./
 
 RUN pip install -r requirements.txt
 
-CMD python main.py 0.0.0.0:9200 0.0.0.0:8787
+CMD python main.py twittify-elasticsearch:9200 0.0.0.0:8787
