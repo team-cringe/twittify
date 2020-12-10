@@ -1,10 +1,11 @@
 import json
 import logging
 import bottle
+import argparse
 
 from bottle import get, post
 
-from src.clusterizer import Clusterizer
+from clustering import Clusterizer
 
 logging.basicConfig(level=logging.INFO)
 
@@ -44,10 +45,21 @@ def recommend():
 
 
 if __name__ == '__main__':
-    clusterizer = Clusterizer(es='http://localhost:9200')
-    clusterizer.process_data(n_tweets=10_000)
-    clusterizer.cluster_data(n_clusters=10)
+    parser = argparse.ArgumentParser(description='Cluster Twitter users')
+    parser.add_argument('es', help='Address of an Elasticsearch instance')
+    parser.add_argument('server', help='IP and port of a scraper server')
+    parser.add_argument('--tweets', help='Number of tweets to extract', type=int, default=100_000)
+    parser.add_argument('--clusters', help='Number of clusters to form', type=int, default=24)
 
-    logging.info('Processed data. Ready to start a server...')
+    arguments = parser.parse_args()
 
-    bottle.run(host='0.0.0.0', port=7878)
+    host = arguments.server.split(':')[0]
+    port = arguments.server.split(':')[1]
+
+    clusterizer = Clusterizer(es='http://' + arguments.es)
+    clusterizer.process_data(n_tweets=arguments.tweets)
+    clusterizer.cluster_data(n_clusters=arguments.clusters)
+
+    logging.info('Processed data. Ready to start a scraper...')
+
+    bottle.run(host=host, port=port)

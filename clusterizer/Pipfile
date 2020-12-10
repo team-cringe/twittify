@@ -6,7 +6,6 @@ name = "pypi"
 [packages]
 numpy = "*"
 pandas = "*"
-progress = "*"
 scikit-learn = "*"
 nltk = "*"
 pymystem3 = "*"
@@ -16,17 +15,10 @@ bottle = "*"
 [dev-packages]
 pylint = "*"
 
-[requires]
-python_version = "3.8"
-
 [packages.pandasticsearch]
 git = "https://github.com/onesuper/pandasticsearch.git"
 ref = "0.6.0"
 
-[packages.twint]
-git = "https://github.com/dikuchan/twint.git"
-ref = "origin/nosleep"
-
 [packages.stop-words]
 git = "https://github.com/Alir3z4/python-stop-words.git"
-ref = "origin/master"
+ref = "master"

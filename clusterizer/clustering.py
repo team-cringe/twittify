@@ -12,7 +12,7 @@ import stop_words
 
 import logging
 
-from .parsing import *
+from parsing import *
 
 logger = logging.getLogger(__name__)
 
