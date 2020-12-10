@@ -1,0 +1,42 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: twittify-clusterizer
+  labels:
+    app: twittify-clusterizer
+    service: twittify-clusterizer
+spec:
+  ports:
+    - port: 8787
+      name: http
+  selector:
+    app: twittify-clusterizer
+---
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  # Unique key of the Deployment instance
+  name: twittify-clusterizer
+  labels:
+    app: twittify-clusterizer
+    version: v1
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: twittify-clusterizer
+      version: v1
+  template:
+    metadata:
+      labels:
+        # Apply this label to pods and default
+        # the Deployment label selector to this value
+        app: twittify-clusterizer
+        version: v1
+    spec:
+      containers:
+        - name: twittify-clusterizer
+          # Run this image
+          image: dikuchan/twittify-clusterizer:latest
+          ports:
+            - containerPort: 8787
