@@ -33,3 +33,14 @@ spec:
         host: twittify-client
         port:
           number: 8080
+  - match:
+    - uri:
+        prefix: /api/
+    - uri:
+        prefix: /api
+    route:
+    - destination:
+        host: twittify-clusterizer
+        port:
+          number: 8787
+  
