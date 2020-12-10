@@ -1,11 +1,12 @@
 import * as yup from "yup";
-import { User } from "../lib/types";
+import { User, Tag } from "../lib/types";
 
-async function fetchRecommend() {
+async function fetchRecommend(tags: Tag[]) {
   const res: {
     users: User[];
   } = await fetch(`/api/recommend`, {
-    method: "post"
+    method: "post",
+    body: JSON.stringify({ tags: tags }),
   })
     .then((res) => res.json())
     .catch((err) => alert(err.toString()));
