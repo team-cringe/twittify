@@ -40,13 +40,4 @@ for config in ./istio/*; do
 done
 echo
 
-INGRESS_PORT=$(kubectl -n istio-system get service istio-ingressgateway -o jsonpath='{.spec.ports[?(@.name=="http2")].nodePort}')
-INGRESS_HOST=$(minikube ip)
-
-GATEWAY_URL=http://$INGRESS_HOST:$INGRESS_PORT
-
-echo Twittify is listening on "$GATEWAY_URL"
-
-
-
-
+echo "[INFO] All done"
