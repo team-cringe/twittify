@@ -2,6 +2,7 @@ import React, { useState } from "react";
 import { Switch, Route, BrowserRouter } from "react-router-dom";
 import "./App.css";
 import Home from "./components/Home";
+import NotLoaded from "./components/NotLoaded";
 import Recommendations from "./components/Recommendations";
 // import { SearchBar } from "./components/SearchBar";
 
@@ -22,6 +23,9 @@ const App = () => {
           </Route>
           <Route path="/recommendations" exact>
             <Recommendations {...appProps} />
+          </Route>
+          <Route path="/not-loaded">
+            <NotLoaded />
           </Route>
           <Route>
             <h1>Not Found</h1>

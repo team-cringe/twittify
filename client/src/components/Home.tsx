@@ -1,61 +1,17 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
 import { withRouter, RouteComponentProps } from "react-router-dom";
-
-const serverUrl = "http://localhost:8080";
-
-interface Tag {
-  tag: string;
-  n: number;
-}
-
-interface User {
-  username: string;
-  fullname: string;
-}
-
-async function fetchTags(): Promise<Tag[]> {
-  const res: {
-    clusters: {
-      tags: string[];
-      n: number;
-    }[];
-  } = await fetch(`${serverUrl}/api/tags`).then((res) => res.json());
-  // const res = {
-  //   clusters: [
-  //     { tags: ["спорт"], n: 1 },
-  //     { tags: ["собаки"], n: 2 },
-  //   ],
-  // };
-
-  return res.clusters.reduce(
-    (acc, el) =>
-      acc.concat(
-        el.tags.map((t) => {
-          return { tag: t, n: el.n };
-        })
-      ),
-    new Array<Tag>()
-  );
-}
-
-async function fetchRecommend() {
-  const res: {
-    users: {
-      username: string;
-      fullname: string;
-    }[];
-  } = await fetch(`${serverUrl}/api/recommend`).then((res) => res.json());
-
-  return res;
-}
+import { Tag } from "../lib/types";
+import fetchTags from "./fetchTags";
+import fetchRecommend from "./fetchRecommend";
+import "./Home.css";
 
 interface Props {
   setRecommendations: Function;
 }
 
 function Home(props: Props & RouteComponentProps) {
-  console.log(props);
+  console.log(process.env);
   const { setRecommendations, history } = props;
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
@@ -67,6 +23,10 @@ function Home(props: Props & RouteComponentProps) {
 
   useEffect(() => {
     fetchTags().then((res) => {
+      if (res === null || res === undefined) {
+        history.push("/not-loaded");
+        return;
+      }
       setTags(res);
       setLoading(false);
     });
@@ -74,28 +34,37 @@ function Home(props: Props & RouteComponentProps) {
 
   return (
     <div className="Home container p-5">
-      <Button
-        variant="primary"
-        disabled={recommending || selected.length === 0}
-        onClick={async () => {
-          setRecommending(true);
-          await fetchRecommend().then((res) => {
-            setRecommendations(res.users);
-            setRecommending(false);
-            console.log("push");
-            history.push("/recommendations");
-          });
-        }}
-      >
-        Recommend
-      </Button>
+      <h2>Select titles that are more interesting for you</h2>
+
+      <div className="fixed-bottom d-flex justify-content-end p-6">
+        <Button
+          className="recommend-btn"
+          variant={
+            selected.length === 0 ? "outline-secondary" : "outline-primary"
+          }
+          size="lg"
+          disabled={recommending || selected.length === 0}
+          onClick={async () => {
+            setRecommending(true);
+            await fetchRecommend().then((res) => {
+              setRecommendations(res);
+              setRecommending(false);
+              console.log("push");
+              history.push("/recommendations");
+            });
+          }}
+        >
+          {"Recommend ->"}
+        </Button>
+      </div>
+
       {loading ? (
         <Spinner animation="border" />
       ) : (
         <div>
           {tags.map((t, i) => (
             <Button
-              className="mx-2"
+              className="m-2"
               variant={inSelected(t) >= 0 ? "danger" : "primary"}
               key={i}
               onClick={() => {
@@ -107,7 +76,7 @@ function Home(props: Props & RouteComponentProps) {
                 setSelected(newSelected);
               }}
             >
-              #{t.tag}
+              {t.tag}
             </Button>
           ))}
         </div>
