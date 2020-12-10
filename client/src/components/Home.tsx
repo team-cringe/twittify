@@ -46,7 +46,7 @@ function Home(props: Props & RouteComponentProps) {
           disabled={recommending || selected.length === 0}
           onClick={async () => {
             setRecommending(true);
-            await fetchRecommend().then((res) => {
+            await fetchRecommend(selected).then((res) => {
               setRecommendations(res);
               setRecommending(false);
               console.log("push");
