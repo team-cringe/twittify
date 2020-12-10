@@ -1,20 +1,20 @@
 import React from "react";
-import { Card } from "react-bootstrap";
-
-interface User {
-  username: string;
-  fullname: string;
-}
+import { Button, Card } from "react-bootstrap";
+import { withRouter, RouteComponentProps } from "react-router-dom";
+import { User } from "../lib/types";
 
 interface Props {
   recommendations: User[];
 }
 
-function Recommendations(props: Props) {
-  const { recommendations } = props;
+function Recommendations(props: Props & RouteComponentProps) {
+  const { recommendations, history } = props;
 
   return (
     <div className="Recommendations container">
+      <Button variant="primary" onClick={() => history.push("/")}>
+        Return to tags
+      </Button>
       {recommendations.map((el, i) => (
         <Card key={i}>
           <Card.Body>
@@ -27,4 +27,4 @@ function Recommendations(props: Props) {
   );
 }
 
-export default Recommendations;
+export default withRouter(Recommendations);

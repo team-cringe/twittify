@@ -1,5 +1,9 @@
 export interface User {
-  name: string;
-  url: string;
-  pic: string;
+  username: string;
+  fullname: string;
+}
+
+export interface Tag {
+  tag: string;
+  n: number;
 }
