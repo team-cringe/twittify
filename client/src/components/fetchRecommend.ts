@@ -4,7 +4,9 @@ import { User } from "../lib/types";
 async function fetchRecommend() {
   const res: {
     users: User[];
-  } = await fetch(`/api/recommend`)
+  } = await fetch(`/api/recommend`, {
+    method: "post"
+  })
     .then((res) => res.json())
     .catch((err) => alert(err.toString()));
   //   const res = {
