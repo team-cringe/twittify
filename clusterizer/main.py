@@ -72,8 +72,8 @@ if __name__ == '__main__':
     parser = argparse.ArgumentParser(description='Cluster Twitter users')
     parser.add_argument('es', help='Address of an Elasticsearch instance')
     parser.add_argument('server', help='IP and port of a scraper server')
-    parser.add_argument('--tweets', help='Number of tweets to extract', type=int, default=1_000_000)
-    parser.add_argument('--clusters', help='Number of clusters to form', type=int, default=24)
+    parser.add_argument('--tweets', help='Number of tweets to extract', type=int, default=1_500_000)
+    parser.add_argument('--clusters', help='Number of clusters to form', type=int, default=18)
 
     arguments = parser.parse_args()
 

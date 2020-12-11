@@ -1,4 +1,4 @@
-from regex import match
+from regex import match, search
 from string import punctuation
 from emoji import UNICODE_EMOJI
 
@@ -62,6 +62,16 @@ def is_mention(word):
         word (str): A word to check.
     """
     return bool(match(r'@\p{IsLatin}+', word))
+
+
+def has_postfix(word):
+    """
+    Return True if a word has a russian postfix.
+
+    Parameters:
+        word (str): A word to check.
+    """
+    return bool(search(r'(-то|-за|-либо|-нибудь)', word))
 
 
 def remove_word_if(sentence, f) -> str:

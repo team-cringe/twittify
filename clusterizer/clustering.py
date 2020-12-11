@@ -22,7 +22,11 @@ nltk.download('stopwords', download_dir='./data/')
 
 # Fill in stopwords.
 stopwords = set(nltk.corpus.stopwords.words('russian'))
-stopwords.update(['че', 'ммм', 'аля', 'ой'])
+stopwords.update(nltk.corpus.stopwords.words('english'))
+stopwords.update(
+    ['че', 'чё', 'ммм', 'аля', 'ой', 'тип', 'блять', 'блядь', 'хуй', 'пизда', 'тм', 'via', 'lt', 'gt', 'нахуй', 'бля',
+     'хд', 'хз', 'ебать', 'нахуй', 'пиздец', 'щас', 'свой', 'своя', 'свои', 'мой', 'моя', 'мои', 'самый', 'вообще',
+     'блин', 'ах', 'ахах', 'ла', 'ля', 'чо'])
 stopwords.update(stop_words.get_stop_words('russian'))
 
 stem = pymystem3.Mystem()
@@ -34,6 +38,7 @@ def process_tweets(tweets):
         text = []
         tweet = remove_word_if(t, is_url)
         tweet = remove_word_if(tweet, is_mention)
+        tweet = remove_word_if(tweet, has_postfix)
         tweet = tweet.lower()
         for w in stem.lemmatize(tweet):
             word = w.strip()
@@ -42,7 +47,17 @@ def process_tweets(tweets):
                     and not is_emoji(word) \
                     and not is_symbol(word) \
                     and word not in stopwords:
-                text.append(word)
+                try:
+                    analysis = stem.analyze(word)[0]['analysis']
+                    if not analysis:
+                        text.append(word)
+                    else:
+                        group = analysis[0]['gr'].split(',')[0]
+                        if group in ['V', 'S']:
+                            text.append(word)
+                except (IndexError, KeyError):
+                    continue
+                # text.append(word)
         result.append(' '.join(text))
     return ' '.join(result)
 
@@ -90,8 +105,11 @@ class Clusterizer:
         self.df.nlikes = self.df.nlikes.apply(np.mean)
         self.df.nreplies = self.df.nreplies.apply(np.mean)
         self.df.nretweets = self.df.nretweets.apply(np.mean)
-        self.df.tweet = self.df.tweet.apply(process_tweets)
         self.df.name = self.df.name.apply(lambda s: s[0])
+
+        logger.info('Start processing of tweets')
+
+        self.df.tweet = self.df.tweet.apply(process_tweets)
 
         logger.info('Preprocessed data')
 
@@ -102,7 +120,7 @@ class Clusterizer:
         Parameters:
             n_clusters (int): Number of clusters to form.
         """
-        logger.info('Start cluster procedure...')
+        logger.info('Start cluster procedure')
 
         tfidf = TfidfVectorizer(min_df=5, max_df=0.95)
         self.text = tfidf.fit_transform(self.df.tweet)
