@@ -35,7 +35,7 @@ kubectl get namespace default --show-labels | grep -q istio-injection=enabled ||
   kubectl label namespace default istio-injection=enabled
 
 echo "[INFO] Uploading Kubernetes units"
-for config in ../istio/*; do
+for config in ./istio/*; do
   kubectl apply -f "$config"
 done
 echo
