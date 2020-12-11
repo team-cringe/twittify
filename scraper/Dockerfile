@@ -13,6 +13,6 @@ RUN pip install pipenv
 RUN pipenv update
 
 CMD pipenv run python main.py \
-               && --seed sankldive MedvedevRussia yurydud \
-               && --elastic twittify-elasticsearch:9200 \
-               && --cluster twittify-clusterizer:8787
+               --seed sankldive MedvedevRussia yurydud \
+               --elastic twittify-elasticsearch:9200 \
+               --cluster twittify-clusterizer:8787
