@@ -10,8 +10,7 @@ ADD lib ./lib
 COPY Pipfile* ./
 
 RUN pip install pipenv
-RUN pipenv lock --requirements > requirements.txt
-RUN pip install -r requirements.txt
+RUN pipenv update
 
 CMD pipenv run python main.py \
                && --seed sankldive MedvedevRussia yurydud \
