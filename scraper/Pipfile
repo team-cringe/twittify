@@ -11,4 +11,5 @@ python_version = "3.8"
 
 [packages.twint]
 git = "https://github.com/dikuchan/twint.git"
-ref = "nosleep"
+editable = true
+ref = "origin/nosleep"

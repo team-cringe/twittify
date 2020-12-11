@@ -58,7 +58,7 @@ class Scraper:
 
             # Tune parameters of a Twint query and send a request.
             self.config.Username = username
-            self.config.Limit = following / 20
+            self.config.Limit = int(following / 20)
 
             if scraped > limit:
                 self.inform(scraped, batches)
@@ -71,6 +71,7 @@ class Scraper:
                     self.config.Store_object = True
                     twint.run.Following(self.config)
                     self.queue.update(twint.output.follows_list)
+                    twint.output.follows_list = []
                 except Exception as e:
                     logger.error(e)
                     continue
@@ -82,7 +83,7 @@ class Scraper:
             logger.info(f'In queue: {len(self.queue)}')
 
             # Scrape tweets of a user.
-            self.config.Limit = tweets / 20
+            self.config.Limit = int(tweets / 20)
             try:
                 self.config.Store_object = False
                 twint.run.Search(self.config)
