@@ -65,14 +65,14 @@ if __name__ == '__main__':
         print('Docker not found. Aborting...', file=sys.stderr)
         exit(1)
 
-    print('Pulling images')
+    print('[1/4] Pulling images')
     for image in images.values():
         pull(image)
 
-    print('Setting up network')
+    print('[2/4] Setting up network')
     network('twittify-network')
 
-    print('Deploying containers')
+    print('[3/4] Deploying containers')
     deploy('twittify-elasticsearch', {'detach': None,
                                       'net': 'twittify-network',
                                       'publish': ['9200:9200', '9300:9300'],
@@ -84,6 +84,6 @@ if __name__ == '__main__':
     deploy('twittify-torproxy', {'detach': None,
                                  'publish': ['8118:8118', '9050:9050']})
 
-    print('Starting instances')
+    print('[4/4] Starting instances')
     for container in images.keys():
         start(container)

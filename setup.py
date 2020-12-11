@@ -14,6 +14,7 @@ if __name__ == '__main__':
     parser.add_argument('--restart', '-r', help='Restart pods', required=False, nargs='*')
     parser.add_argument('--run', help='Run Minikube tunnel', action='store_true')
     parser.add_argument('--address', '-a', help='Discover address of a cluster', action='store_true')
+    parser.add_argument('--test', '-t', help='Test Scraper and Clusterizer locally', action='store_true')
 
     arguments = parser.parse_args()
 
@@ -22,19 +23,20 @@ if __name__ == '__main__':
             subprocess.run(['./scripts/istio-setup-local.sh'])
         if arguments.istio == 'cloud':
             subprocess.run(['./scripts/istio-setup-gcloud.sh'])
-
-    if arguments.cleanup:
+    elif arguments.cleanup:
         subprocess.run(['./scripts/cleanup.sh'])
-
-    if arguments.restart is not None:
+    elif arguments.restart is not None:
         pods = ['client', 'scraper', 'clusterizer']
         if arguments.restart != [] and arguments.restart != ['all']:
             pods = arguments.restart
         for pod in pods:
             subprocess.run(['kubectl', 'rollout', 'restart', 'deployment/twittify' + pod])
-
-    if arguments.run:
+    elif arguments.run:
         subprocess.run(['./scripts/run-tunnel.sh'])
-
-    if arguments.address:
+    elif arguments.address:
         subprocess.run(['./scripts/get-address.sh'])
+    elif arguments.test:
+        subprocess.run(['./scripts/local-setup.py'])
+    else:
+        print('Consider checking README.md')
+        parser.print_help()
