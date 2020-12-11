@@ -45,7 +45,7 @@ def recommend():
     logging.info('Received POST on recommend')
 
     try:
-        data = bottle.request.json()
+        data = bottle.request.json
     except ValueError:
         logging.error('Cannot parse input data of `recommend`')
         return
@@ -61,9 +61,11 @@ def recommend():
         return bottle.HTTPResponse(status=403,
                                    body=json.dumps({}))
 
-    return json.dumps({
-        'users': [clusterizer.get_recommendations(tag['n'])
-                  for tag in data['tags']]})
+    users = []
+    for tag in data['tags']:
+        users.extend(clusterizer.get_recommendations(tag['n']))
+
+    return json.dumps({'users': users})
 
 
 if __name__ == '__main__':
