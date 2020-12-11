@@ -62,10 +62,10 @@ class Scraper:
             self.config.Username = username
             self.config.Limit = following / 20
 
-            if scraped + 8 > self.limit and not ready:
+            if scraped + 1 > self.limit and not ready:
                 try:
                     request = requests.post('http://twittify-clusterizer:8787/api/ready',
-                                            data={'ready': True})
+                                            data={'n': scraped})
                     request.close()
                     ready = True
                 except Exception as e:
