@@ -1,26 +1,39 @@
-## How to launch Twittify on a Minikube cluster
+## How to set up Twittify on Kubernetes
 
-### Requirements
+These steps require you to have a cluster running a compatible version of Kubernetes (1.16, 1.17, 1.18, 1.19). You can use any supported platform, for example Minikube.
 
-- docker
-- minikube
-- kubectl
-- istioctl
+### Prerequirements
 
-User must be in `docker` group.
+- [Download and install Istio](https://istio.io/latest/docs/setup/getting-started/#download)
 
-### Instructions
+### Setup
 
-1. To launch a cluster, run `istio-setup.py`.
-2. To access a client, run `run-tunnel.sh`. 
-Possible output:
+To set up Twittify on a cluster, run
 ```
-When minikube tunnel starts, Twittify will listen on http://192.168.49.2:PORT
+./setup.py --istio cloud
 ```
-where
+It verifies Istio installation and applies Twittify configs located at /istio to the cluster.
 
-- Address of the cluster: `http://192.168.49.2:PORT`.
-- Address of the client: `http://192.168.49.2:PORT/client`.
+Command
+```
+./setup.py --istio local
+```
+also starts Minikube cluster. It can be run only by user in docker group.
+
+
+### Discovering address of Twittify
+
+To discover address of the cluster, run
+```
+./setup.py --address
+```
+It shows address of the Twittify client.
+
+If cluster is running on Minikube, run
+```
+./setup.py --tunnel
+```
+It shows address and starts Minikube tunnel.
 
 ## How to test Scraper and Clusterizer locally
 
