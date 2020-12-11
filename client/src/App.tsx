@@ -3,7 +3,6 @@ import { Switch, Route, BrowserRouter } from "react-router-dom";
 import "./App.css";
 import Home from "./components/Home";
 import NavBar from "./components/NavBar";
-import NotLoaded from "./components/NotLoaded";
 import Recommendations from "./components/Recommendations";
 // import { SearchBar } from "./components/SearchBar";
 import { Tag, User } from "./lib/types";
