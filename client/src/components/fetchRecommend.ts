@@ -6,62 +6,13 @@ async function fetchRecommend(tags: Tag[]) {
     users: User[];
   } = await fetch(`/api/recommend`, {
     method: "post",
+    headers: {
+      "Content-Type": "application/json",
+    },
     body: JSON.stringify({ tags: tags }),
   })
     .then((res) => res.json())
     .catch((err) => alert(err.toString()));
-  //   const res = {
-  //     users: [
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //       {
-  //         username: "Lol",
-  //         fullname: "string",
-  //       },
-  //     ],
-  //   };
 
   const resSchema = yup.object().shape({
     users: yup
