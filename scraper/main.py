@@ -76,12 +76,16 @@ class Scraper:
 
             # Get followings of a user.
             if len(self.usernames) < self.limit:
+                # Clear in-memory data.
+                twint.output.follows_list = []
+                twint.output.tweets_list = []
+
                 try:
                     twint.run.Following(self.config)
+                    self.usernames.update(twint.output.follows_list)
                 except Exception as e:
                     logger.error(e)
                     continue
-                self.usernames.update(twint.output.follows_list)
 
                 logger.info(f'Scraped followings of the user `{username}`')
 
