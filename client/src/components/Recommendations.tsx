@@ -1,30 +1,41 @@
 import React from "react";
-import { Button, Card } from "react-bootstrap";
-import { withRouter, RouteComponentProps } from "react-router-dom";
+import { Button, Card, Row } from "react-bootstrap";
 import { User } from "../lib/types";
+import "./Recommendations.css";
 
 interface Props {
   recommendations: User[];
 }
 
-function Recommendations(props: Props & RouteComponentProps) {
-  const { recommendations, history } = props;
+function Recommendations(props: Props) {
+  const { recommendations } = props;
 
   return (
-    <div className="Recommendations container">
-      <Button variant="primary" onClick={() => history.push("/")}>
-        Return to tags
-      </Button>
-      {recommendations.map((el, i) => (
-        <Card key={i}>
-          <Card.Body>
-            <Card.Title>{el.fullname}</Card.Title>
-            <Card.Text>{el.username}</Card.Text>
-          </Card.Body>
-        </Card>
-      ))}
+    <div className="Recommendations container d-flex">
+      <Row>
+        {recommendations.map((el: User, i) => (
+          <Card key={i} className="user-card">
+            <Card.Body>
+              <Card.Title>
+                {el.fullname}{" "}
+                <a href={`https://twitter.com/${el.username}`}>
+                  @{el.username}
+                </a>
+              </Card.Title>
+              <Card.Text>
+                Average likes: {Math.round(el.nlikes)}
+                <br />
+                Average replies: {Math.round(el.nreplies)}
+                <br />
+                Average retweets: {Math.round(el.nretweets)}
+                <br />
+              </Card.Text>
+            </Card.Body>
+          </Card>
+        ))}
+      </Row>
     </div>
   );
 }
 
-export default withRouter(Recommendations);
+export default Recommendations;

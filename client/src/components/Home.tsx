@@ -3,28 +3,27 @@ import { Button, Spinner } from "react-bootstrap";
 import { withRouter, RouteComponentProps } from "react-router-dom";
 import { Tag } from "../lib/types";
 import fetchTags from "./fetchTags";
-import fetchRecommend from "./fetchRecommend";
 import "./Home.css";
 
 interface Props {
   setRecommendations: Function;
+  selected: Tag[];
+  setSelected: Function;
+  inSelected: (tag: Tag) => number;
+  ready: boolean;
+  setReady: Function;
 }
 
 function Home(props: Props & RouteComponentProps) {
   console.log(process.env);
-  const { setRecommendations, history } = props;
+  const { history, selected, setSelected, inSelected, ready, setReady } = props;
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const [selected, setSelected] = useState<Tag[]>([]);
-  const [recommending, setRecommending] = useState<boolean>(false);
-
-  const inSelected = (tag: Tag) =>
-    selected.findIndex((el) => el.tag === tag.tag);
 
   useEffect(() => {
     fetchTags().then((res) => {
       if (res === null || res === undefined) {
-        history.push("/not-loaded");
+        setReady(false);
         return;
       }
       setTags(res);
@@ -32,31 +31,11 @@ function Home(props: Props & RouteComponentProps) {
     });
   }, []);
 
-  return (
+  return ready ? (
     <div className="Home container p-5">
       <h2>Select titles that are more interesting for you</h2>
 
-      <div className="fixed-bottom d-flex justify-content-end p-6">
-        <Button
-          className="recommend-btn"
-          variant={
-            selected.length === 0 ? "outline-secondary" : "outline-primary"
-          }
-          size="lg"
-          disabled={recommending || selected.length === 0}
-          onClick={async () => {
-            setRecommending(true);
-            await fetchRecommend(selected).then((res) => {
-              setRecommendations(res);
-              setRecommending(false);
-              console.log("push");
-              history.push("/recommendations");
-            });
-          }}
-        >
-          {"Recommend ->"}
-        </Button>
-      </div>
+      <div className="fixed-bottom d-flex justify-content-end p-6"></div>
 
       {loading ? (
         <Spinner animation="border" />
@@ -81,6 +60,10 @@ function Home(props: Props & RouteComponentProps) {
           ))}
         </div>
       )}
+    </div>
+  ) : (
+    <div className="container d-flex justify-content-center">
+      <h1 className="my-4">Cluster is not ready yet</h1>
     </div>
   );
 }
