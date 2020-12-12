@@ -9,20 +9,16 @@ from lib import Clusterizer
 
 @get('/api/tags')
 def tags():
-    bottle.response.set_header('Content-Type', 'application/json')
-
     if not clusterizer.processed:
         return bottle.HTTPResponse(status=403)
+
+    bottle.response.set_header('Content-Type', 'application/json')
 
     return json.dumps({'clusters': clusterizer.tags()})
 
 
 @post('/api/ready')
 def ready():
-    if clusterizer.processed:
-        logging.info('Clusters already defined')
-        return
-
     logging.info('Scraper is ready')
     logging.info('Starting analysis')
 
