@@ -54,6 +54,7 @@ class Scraper:
             try:
                 username = self.queue.pop()
             except KeyError:
+                # If queue is empty, start over with the initial seed.
                 username = set(self.seed)
 
             # Tune parameters of a Twint query and send a request.
@@ -61,6 +62,7 @@ class Scraper:
             self.config.Limit = int(following / 20)
 
             if scraped > limit:
+                # Inform Clusterizer that it may proceed with a fresh data.
                 self.inform(scraped, batches)
                 scraped = 0
                 batches += 1
@@ -72,11 +74,12 @@ class Scraper:
                     twint.run.Following(self.config)
                     self.queue.update(twint.output.follows_list)
                     twint.output.follows_list = []
+
+                    logger.info(f'Scraped followings of: {username}')
                 except Exception as e:
+                    self.queue.add(username)
                     logger.error(e)
                     continue
-
-                logger.info(f'Scraped followings of: {username}')
 
             logger.info(f'Scraped: {scraped}')
             logger.info(f'Batches: {batches}')

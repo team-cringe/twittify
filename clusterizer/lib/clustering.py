@@ -28,7 +28,8 @@ stopwords.update(
      'хуй', 'пизда', 'тм', 'via', 'lt', 'gt', 'нахуй', 'бля',
      'хд', 'хз', 'ебать', 'пиздец', 'щас', 'свой', 'своя', 'свои',
      'мой', 'моя', 'мои', 'самый', 'вообще', 'блин', 'ах', 'ахах',
-     'ла', 'ля', 'чо', 'што', 'lol', 'як', 'шо', 'це'])
+     'ла', 'ля', 'чо', 'што', 'сука', 'як', 'шо', 'це',
+     'lol', 'ru', 'en', 'uk', 'us', 'tm', 'говно', 'гавно'])
 stopwords.update(stop_words.get_stop_words('russian'))
 
 # Initialize the morphological analyser.
@@ -72,8 +73,8 @@ def process_tweets(tweets) -> str:
                         text.append(word)
                     else:
                         group = analysis[0]['gr'].split(',')[0]
-                        # Save only nouns and verbs.
-                        if group in ['V', 'S']:
+                        # Save only nouns.
+                        if group in ['S']:
                             text.append(word)
                 except (IndexError, KeyError):
                     continue
@@ -94,13 +95,12 @@ class Clusterizer:
         Parameters:
             elastic (str): URI of an Elasticsearch instance.
         """
-
         self.processed = False
         self.df = DataFrame.from_es(url=f'http://{elastic}', index='twittify-tweets', compat=7)
 
         logger.info(f'Established connection to: {elastic}')
 
-    def process(self, n_tweets=10_000):
+    def process(self, n_tweets):
         """
         Load data from Elasticsearch instance to Pandas dataframe and process it.
 
@@ -130,7 +130,7 @@ class Clusterizer:
 
         logger.info('Processed text')
 
-    def cluster(self, n_clusters=24):
+    def cluster(self, n_clusters):
         """
         Consistently apply TF-IDF and KMeans to data.
 
@@ -149,9 +149,9 @@ class Clusterizer:
             logger.error(e)
             raise ValueError(e)
 
-        logger.info('Finished clustering')
-
         self.processed = True
+
+        logger.info('Finished clustering')
 
     def tags(self, n_tags=10) -> [dict]:
         """
