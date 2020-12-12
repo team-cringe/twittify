@@ -5,11 +5,14 @@ WORKDIR .
 EXPOSE 80
 
 ADD main.py ./
+ADD lib ./lib
 
 COPY Pipfile* ./
 
 RUN pip install pipenv
-RUN pipenv lock --requirements > requirements.txt
-RUN pip install -r requirements.txt
+RUN pipenv update
 
-CMD python main.py sankldive --proxy=twittify-torproxy:9050 --es=twittify-elasticsearch:9200
+CMD pipenv run python main.py \
+               --seed sankldive MedvedevRussia yurydud \
+               --elastic twittify-elasticsearch:9200 \
+               --cluster twittify-clusterizer:8787

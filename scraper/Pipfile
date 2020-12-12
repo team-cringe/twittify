@@ -3,8 +3,6 @@ url = "https://pypi.python.org/simple"
 verify_ssl = true
 name = "pypi"
 
-[packages]
-
 [dev-packages]
 pylint = "*"
 
@@ -13,4 +11,5 @@ python_version = "3.8"
 
 [packages.twint]
 git = "https://github.com/dikuchan/twint.git"
-ref = "nosleep"
+editable = true
+ref = "origin/nosleep"
