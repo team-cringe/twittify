@@ -9,7 +9,17 @@ async function fetchRecommend(tags: Tag[]) {
     headers: {
       "Content-Type": "application/json",
     },
-    body: JSON.stringify({ tags: tags }),
+    body: JSON.stringify({
+      tags: tags.reduce(
+        (acc, v) =>
+          acc.concat(
+            v.n.map((el) => {
+              return { tag: v.tag, n: el };
+            })
+          ),
+        new Array<{ tag: string; n: number }>()
+      ),
+    }),
   })
     .then((res) => res.json())
     .catch((err) => alert(err.toString()));

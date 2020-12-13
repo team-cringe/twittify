@@ -11,6 +11,7 @@ interface Props {
   setRecommending: React.Dispatch<React.SetStateAction<boolean>>;
   setRecommendations: React.Dispatch<React.SetStateAction<User[]>>;
   ready: boolean;
+  setSelected: Function;
 }
 
 function NavBar(props: Props & RouteComponentProps) {
@@ -21,11 +22,12 @@ function NavBar(props: Props & RouteComponentProps) {
     setRecommending,
     setRecommendations,
     ready,
+    setSelected,
   } = props;
 
   return (
     <Navbar bg="light" expand="lg">
-      <Nav className="width-full">
+      <Nav className="btn-wrapper mr-auto">
         {(window.location.pathname === "/recommendations" ||
           window.location.pathname === "/client/recommendations" ||
           window.location.pathname === "/client/recommendations/") &&
@@ -41,30 +43,42 @@ function NavBar(props: Props & RouteComponentProps) {
           )}
       </Nav>
       <Navbar.Brand>Twittify</Navbar.Brand>
-      <Nav className="width-full">
+      <Nav className="btn-wrapper ml-auto">
         {(window.location.pathname === "/" ||
           window.location.pathname === "/client" ||
           window.location.pathname === "/client/") &&
           ready && (
-            <Button
-              className="recommend-btn ml-auto"
-              variant={
-                selected.length === 0 ? "outline-secondary" : "outline-primary"
-              }
-              size="lg"
-              disabled={recommending || selected.length === 0}
-              onClick={async () => {
-                setRecommending(true);
-                await fetchRecommend(selected).then((res) => {
-                  setRecommendations(res);
-                  setRecommending(false);
-                  console.log("push");
-                  history.push("/recommendations");
-                });
-              }}
-            >
-              {"Recommend ->"}
-            </Button>
+            <>
+              <Button
+                disabled={recommending || selected.length === 0}
+                className="reset-btn mr-1"
+                variant="outline-warning"
+                onClick={() => setSelected([])}
+              >
+                Reset
+              </Button>
+              <Button
+                className="recommend-btn ml-auto"
+                variant={
+                  selected.length === 0
+                    ? "outline-secondary"
+                    : "outline-primary"
+                }
+                size="lg"
+                disabled={recommending || selected.length === 0}
+                onClick={async () => {
+                  setRecommending(true);
+                  await fetchRecommend(selected).then((res) => {
+                    setRecommendations(res);
+                    setRecommending(false);
+                    console.log("push");
+                    history.push("/recommendations");
+                  });
+                }}
+              >
+                {"Recommend"}
+              </Button>
+            </>
           )}
       </Nav>
     </Navbar>
