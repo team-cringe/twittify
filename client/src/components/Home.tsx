@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from "react";
 import { Button, Spinner } from "react-bootstrap";
-import { withRouter, RouteComponentProps } from "react-router-dom";
 import { Tag } from "../lib/types";
 import fetchTags from "./fetchTags";
 import "./Home.css";
@@ -14,9 +13,8 @@ interface Props {
   setReady: Function;
 }
 
-function Home(props: Props & RouteComponentProps) {
-  console.log(process.env);
-  const { history, selected, setSelected, inSelected, ready, setReady } = props;
+function Home(props: Props) {
+  const { selected, setSelected, inSelected, ready, setReady } = props;
   const [tags, setTags] = useState<Tag[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
 
@@ -26,7 +24,22 @@ function Home(props: Props & RouteComponentProps) {
         setReady(false);
         return;
       }
-      setTags(res);
+
+      const tags = res.reduce((acc, v) => {
+        let elToAdd: Tag;
+        console.log("acc", acc);
+        if (acc.has(v.tag)) {
+          elToAdd = acc.get(v.tag) || v;
+          elToAdd.n = elToAdd!.n.concat(v.n);
+        } else {
+          elToAdd = v;
+        }
+        acc.set(elToAdd!.tag, elToAdd);
+
+        return acc;
+      }, new Map<string, Tag>());
+
+      setTags(Array.from(tags.values()));
       setLoading(false);
     });
   }, []);
@@ -48,7 +61,6 @@ function Home(props: Props & RouteComponentProps) {
               key={i}
               onClick={() => {
                 const ind = inSelected(t);
-                console.log(ind);
                 const newSelected = Array.from(selected);
                 ind >= 0 ? newSelected.splice(ind, 1) : newSelected.push(t);
                 console.log(newSelected);
@@ -68,4 +80,4 @@ function Home(props: Props & RouteComponentProps) {
   );
 }
 
-export default withRouter(Home);
+export default Home;

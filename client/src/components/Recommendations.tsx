@@ -1,5 +1,5 @@
 import React from "react";
-import { Button, Card, Row } from "react-bootstrap";
+import { Card, Row } from "react-bootstrap";
 import { User } from "../lib/types";
 import "./Recommendations.css";
 

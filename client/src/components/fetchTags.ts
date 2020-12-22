@@ -38,7 +38,7 @@ async function fetchTags(): Promise<Tag[] | null> {
     (acc, el) =>
       acc.concat(
         el.tags.map((t) => {
-          return { tag: t, n: el.n };
+          return { tag: t, n: [el.n] };
         })
       ),
     new Array<Tag>()

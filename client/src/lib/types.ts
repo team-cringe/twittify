@@ -8,5 +8,5 @@ export interface User {
 
 export interface Tag {
   tag: string;
-  n: number;
+  n: number[];
 }
